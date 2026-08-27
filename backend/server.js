@@ -35,15 +35,16 @@ if (!fs.existsSync(uploadsDir)) {
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // 4. API Routes & Health Check
-app.get("/api/health", (_req, res) => {
-  res.json({
+const getHealthStatus = (_req, res) => {
+  res.status(200).json({
     success: true,
     message: "CityFix API is running.",
     service: "cityfix-backend",
     timestamp: new Date().toISOString(),
   });
-});
+};
 
+app.get("/api/health", getHealthStatus);
 app.use("/api", apiRoutes);
 
 // 5. 404 Handler
