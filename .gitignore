@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.backup
+.env.production
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.fleet/
+.nova/
+.zed/
+
+# Uploads (user-generated content)
+backend/uploads/*
+!backend/uploads/reports/.gitkeep
+
+# Build output
+frontend/dist/
+
+# Laravel runtime artifacts
+/vendor/
+/node_modules/
+/database/*.sqlite
+/database/*.sqlite-journal
+/bootstrap/cache/
+/storage/
+/public/build/
+/public/hot
+/public/storage
+
+# Misc
+.phpunit.result.cache
+/auth.json

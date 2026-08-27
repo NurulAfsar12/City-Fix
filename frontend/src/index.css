@@ -1,0 +1,94 @@
+@import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: light --default, dark;
+}
+
+/* ── Custom Theme Colors ──────────────────────────────────────────── */
+@theme {
+  --color-primary-light: #FCA5A5;
+  --color-primary-dark: #991B1B;
+  --color-secondary-light: #FDBA74;
+  --color-secondary-dark: #C2410C;
+  --color-accent-light: #F9A8D4;
+  --color-accent-dark: #BE185D;
+  --color-tertiary: #DB2777;
+  --color-tertiary-light: #F9A8D4;
+  --color-tertiary-dark: #BE185D;
+  --color-success-light: #86EFAC;
+  --color-success-dark: #15803D;
+  --color-warning-light: #FDE68A;
+  --color-warning-dark: #B45309;
+  --color-error-light: #FCA5A5;
+  --color-error-dark: #991B1B;
+  --color-info-light: #7DD3FC;
+  --color-info-dark: #0369A1;
+}
+
+/* ── Light Theme ──────────────────────────────────────────────────── */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: #DC2626;
+  --color-primary-light: #FCA5A5;
+  --color-primary-dark: #991B1B;
+  --color-secondary: #EA580C;
+  --color-secondary-light: #FDBA74;
+  --color-secondary-dark: #C2410C;
+  --color-accent: #DB2777;
+  --color-accent-light: #F9A8D4;
+  --color-accent-dark: #BE185D;
+  --color-neutral: #1E293B;
+  --color-base-100: #FFFFFF;
+  --color-base-200: #F1F5F9;
+  --color-base-300: #CBD5E1;
+  --color-info: #0284C7;
+  --color-info-light: #7DD3FC;
+  --color-info-dark: #0369A1;
+  --color-success: #16A34A;
+  --color-success-light: #86EFAC;
+  --color-success-dark: #15803D;
+  --color-warning: #D97706;
+  --color-warning-light: #FDE68A;
+  --color-warning-dark: #B45309;
+  --color-error: #B91C1C;
+  --color-error-light: #FCA5A5;
+  --color-error-dark: #7F1D1D;
+}
+
+/* ── Dark Theme ───────────────────────────────────────────────────── */
+@plugin "daisyui/theme" {
+  name: "dark";
+  --color-primary: #F87171;
+  --color-primary-light: #FCA5A5;
+  --color-primary-dark: #7F1D1D;
+  --color-secondary: #FB923C;
+  --color-secondary-light: #FDBA74;
+  --color-secondary-dark: #9A3412;
+  --color-accent: #F472B6;
+  --color-accent-light: #F9A8D4;
+  --color-accent-dark: #9D174D;
+  --color-neutral: #F1F5F9;
+  --color-base-100: #0F172A;
+  --color-base-200: #1E293B;
+  --color-base-300: #334155;
+  --color-info: #38BDF8;
+  --color-info-light: #7DD3FC;
+  --color-info-dark: #075985;
+  --color-success: #4ADE80;
+  --color-success-light: #86EFAC;
+  --color-success-dark: #166534;
+  --color-warning: #FBBF24;
+  --color-warning-light: #FDE68A;
+  --color-warning-dark: #92400E;
+  --color-error: #F87171;
+  --color-error-light: #FCA5A5;
+  --color-error-dark: #7F1D1D;
+}
+
+body {
+  font-family: "Urbanist", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
