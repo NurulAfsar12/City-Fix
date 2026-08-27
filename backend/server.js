@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import express from "express";
 import cors from "cors";
-
 import apiRoutes from "./src/routes/index.js";
 
 // 1. Mandatory Environment Variables Check
