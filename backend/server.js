@@ -54,43 +54,47 @@ app.use((req, res) => {
     message: `Route ${req.method} ${req.originalUrl} not found.`,
   });
 });
-
 // 6. Global Error Handler
 app.use((err, req, res, _next) => {
-  const status = err.status || err.statusCode || 500;
+  const status = err.status ?? err.statusCode ?? 500;
   const isProduction = process.env.NODE_ENV === "production";
-  
-  const message = status < 500 
-    ? err.message 
-    : isProduction 
-      ? "Internal server error. Please try again later." 
+
+  const message =
+    status < 500
+      ? err.message
+      : isProduction
+      ? "Internal server error. Please try again later."
       : err.message;
 
   if (status >= 500) {
     console.error(`[SERVER ERROR] ${req.method} ${req.originalUrl}:`, err);
   }
 
-  res.status(status).json({
+  const response = {
     success: false,
     message,
-    ...(isProduction ? {} : { stack: err.stack }), // Dev environment-e debug-er jonno stack trace
-  });
+    ...(isProduction ? {} : { stack: err.stack }),
+  };
+
+  res.status(status).json(response);
 });
 
 // 7. Graceful Server Initialization
 const port = Number(process.env.PORT) || 5000;
+const environment = process.env.NODE_ENV || "development";
 
 const server = app.listen(port, () => {
-  console.log(`CityFix API running on http://localhost:${port} [${process.env.NODE_ENV || "development"}]`);
+  console.log(`CityFix API running on http://localhost:${port} [${environment}]`);
 });
 
 const handleShutdown = (signal) => {
   console.log(`Received ${signal}. Closing HTTP server cleanly...`);
   server.close(() => {
-    console.log("HTTP server closed.");
+    console.log("HTTP server closed cleanly.");
     process.exit(0);
   });
 };
 
-process.on("SIGTERM", () => handleShutdown("SIGTERM"));
-process.on("SIGINT", () => handleShutdown("SIGINT"));
+["SIGTERM", "SIGINT"].forEach((signal) => {
+  process.on(signal, () => handleShutdown(signal));
+});
