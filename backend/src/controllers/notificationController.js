@@ -58,20 +58,20 @@ export async function markAsRead(req, res) {
         return notFound(res, "Notification");
     }
 
-    const rows = await sql`
+    const existing = await sql`
         SELECT id, user_id FROM notifications
         WHERE id = ${notificationId}
         LIMIT 1
     `;
 
-    if (rows.length === 0) {
+    if (existing.length === 0) {
         return res.status(404).json({
             success: false,
             message: "Notification not found.",
         });
     }
 
-    if (rows[0].user_id !== req.user.id) {
+    if (existing[0].user_id !== req.user.id) {
         return res.status(403).json({
             success: false,
             message: "Unauthorized.",
@@ -81,7 +81,7 @@ export async function markAsRead(req, res) {
     const updated = await sql`
         UPDATE notifications
         SET is_read = true, read_at = NOW(), updated_at = NOW()
-        WHERE id = ${notificationId}
+        WHERE id = ${notificationId} AND user_id = ${req.user.id}
         RETURNING id, user_id, report_id, title, message, type, is_read, read_at, created_at, updated_at
     `;
 
@@ -112,27 +112,27 @@ export async function destroy(req, res) {
         return notFound(res, "Notification");
     }
 
-    const rows = await sql`
+    const existing = await sql`
         SELECT id, user_id FROM notifications
         WHERE id = ${notificationId}
         LIMIT 1
     `;
 
-    if (rows.length === 0) {
+    if (existing.length === 0) {
         return res.status(404).json({
             success: false,
             message: "Notification not found.",
         });
     }
 
-    if (rows[0].user_id !== req.user.id) {
+    if (existing[0].user_id !== req.user.id) {
         return res.status(403).json({
             success: false,
             message: "Unauthorized.",
         });
     }
 
-    await sql`DELETE FROM notifications WHERE id = ${notificationId}`;
+    await sql`DELETE FROM notifications WHERE id = ${notificationId} AND user_id = ${req.user.id}`;
 
     return res.json({
         success: true,
