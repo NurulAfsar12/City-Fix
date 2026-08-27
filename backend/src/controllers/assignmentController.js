@@ -7,56 +7,33 @@ import {
 } from "../utils/helpers.js";
 
 async function listAssignments(workerId = null) {
-    const rows = workerId
-        ? await sql`
-            SELECT
-                a.*,
-                r.id AS report_id_rel,
-                r.user_id AS report_user_id,
-                r.category_id AS report_category_id,
-                r.title AS report_title,
-                r.description AS report_description,
-                r.location AS report_location,
-                r.image AS report_image,
-                r.status AS report_status,
-                r.priority AS report_priority,
-                r.resolved_at AS report_resolved_at,
-                r.created_at AS report_created_at,
-                r.updated_at AS report_updated_at,
-                w.id AS worker_id_rel,
-                w.name AS worker_name,
-                w.email AS worker_email,
-                w.phone AS worker_phone
-            FROM assignments a
-            LEFT JOIN reports r ON r.id = a.report_id
-            LEFT JOIN users w ON w.id = a.worker_id
-            WHERE a.worker_id = ${workerId}
-            ORDER BY a.created_at DESC
-        `
-        : await sql`
-            SELECT
-                a.*,
-                r.id AS report_id_rel,
-                r.user_id AS report_user_id,
-                r.category_id AS report_category_id,
-                r.title AS report_title,
-                r.description AS report_description,
-                r.location AS report_location,
-                r.image AS report_image,
-                r.status AS report_status,
-                r.priority AS report_priority,
-                r.resolved_at AS report_resolved_at,
-                r.created_at AS report_created_at,
-                r.updated_at AS report_updated_at,
-                w.id AS worker_id_rel,
-                w.name AS worker_name,
-                w.email AS worker_email,
-                w.phone AS worker_phone
-            FROM assignments a
-            LEFT JOIN reports r ON r.id = a.report_id
-            LEFT JOIN users w ON w.id = a.worker_id
-            ORDER BY a.created_at DESC
-        `;
+    const filterQuery = workerId ? sql`WHERE a.worker_id = ${workerId}` : sql``;
+
+    const rows = await sql`
+        SELECT
+            a.*,
+            r.id AS report_id_rel,
+            r.user_id AS report_user_id,
+            r.category_id AS report_category_id,
+            r.title AS report_title,
+            r.description AS report_description,
+            r.location AS report_location,
+            r.image AS report_image,
+            r.status AS report_status,
+            r.priority AS report_priority,
+            r.resolved_at AS report_resolved_at,
+            r.created_at AS report_created_at,
+            r.updated_at AS report_updated_at,
+            w.id AS worker_id_rel,
+            w.name AS worker_name,
+            w.email AS worker_email,
+            w.phone AS worker_phone
+        FROM assignments a
+        LEFT JOIN reports r ON r.id = a.report_id
+        LEFT JOIN users w ON w.id = a.worker_id
+        ${filterQuery}
+        ORDER BY a.created_at DESC
+    `;
 
     return rows.map(attachAssignmentRelations);
 }
@@ -109,7 +86,7 @@ export async function store(req, res) {
         return validationError(res, errors);
     }
 
-    const workerRows = await sql`SELECT * FROM users WHERE id = ${workerId} LIMIT 1`;
+    const workerRows = await sql`SELECT id, role FROM users WHERE id = ${workerId} LIMIT 1`;
     const worker = workerRows[0];
 
     if (!worker) {
@@ -123,7 +100,7 @@ export async function store(req, res) {
         });
     }
 
-    const reportRows = await sql`SELECT * FROM reports WHERE id = ${reportId} LIMIT 1`;
+    const reportRows = await sql`SELECT id, title, user_id FROM reports WHERE id = ${reportId} LIMIT 1`;
     const report = reportRows[0];
 
     if (!report) {
@@ -159,14 +136,14 @@ export async function store(req, res) {
     await createNotification(
         worker.id,
         "New Report Assigned",
-        "A new civic report has been assigned to you: " + report.title,
+        `A new civic report has been assigned to you: ${report.title}`,
         "assignment"
     );
 
     await createNotification(
         report.user_id,
         "Report Assigned",
-        'Your report "' + report.title + '" has been assigned to a field worker.',
+        `Your report "${report.title}" has been assigned to a field worker.`,
         "report_update"
     );
 
@@ -264,9 +241,9 @@ export async function updateStatus(req, res) {
     }
 
     const messages = {
-        assigned: 'Your report "' + assignment.report.title + '" has been assigned.',
-        in_progress: 'Work has started on your report "' + assignment.report.title + '".',
-        completed: 'Your report "' + assignment.report.title + '" has been resolved.',
+        assigned: `Your report "${assignment.report.title}" has been assigned.`,
+        in_progress: `Work has started on your report "${assignment.report.title}".`,
+        completed: `Your report "${assignment.report.title}" has been resolved.`,
     };
 
     await createNotification(
@@ -280,7 +257,7 @@ export async function updateStatus(req, res) {
         await createNotification(
             assignment.worker_id,
             "Assignment Status Updated",
-            'Assignment for "' + assignment.report.title + '" is now ' + status + ".",
+            `Assignment for "${assignment.report.title}" is now ${status}.`,
             "assignment"
         );
     }
